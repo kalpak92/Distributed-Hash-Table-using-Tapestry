@@ -17,9 +17,17 @@ defmodule Starter do
     Enum.each(base_nodes, fn(i)->
       node_name = i |> String.to_atom()
       # {:ok, node_pid} = Peer.start_link(20, data, node_name,[])
-      {:ok, _node_pid} = Node.start_link("first", node_name, [])
+      map = %{}
+      Enum.each(base_nodes, fn x-> Map.put(map,String.at(x,0),x)end)
+      routing_table = %{
+        "0": map
+      }
+      Enum.each(base_nodes, fn n ->
+        IO.inspect map[n]
+      end)
+      {:ok, _node_pid} = Node.start_link("first", node_name, routing_table,[])
     end)
-    node_list = Chief.get(MyMaster)
+    #node_list = Chief.get(MyMaster)
 
   end
 end
