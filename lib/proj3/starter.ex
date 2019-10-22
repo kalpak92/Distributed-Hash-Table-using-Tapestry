@@ -35,11 +35,14 @@ defmodule Starter do
     IO.inspect node_pid
 
     end)
-    #map = Node.gettable(any_node)
 
-    #Enum.each map["0"], fn {k, v} ->
-     # IO.puts "#{k} --> #{v}"
-    #end
+    map = Node.gettable(Master.lookup(MyMaster,Enum.fetch!(node_list,4)))
+    Enum.each 0..3, fn(i) ->
+      IO.puts(i);
+      Enum.each map[Integer.to_string(i)], fn {k, v} ->
+        IO.puts "#{k} --> #{v}"
+      end
+    end
 
     #IO.puts map["0"]["A"]
 
