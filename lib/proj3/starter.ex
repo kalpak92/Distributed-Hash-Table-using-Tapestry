@@ -11,23 +11,38 @@ defmodule Starter do
     # starting the Master GenServer
     {:ok, master_pid} = Master.start_link([])
     Process.register master_pid, MyMaster
-
-    base_nodes = ["1111", "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999", "0000", "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF"]
+    IO.puts("In Starter")
+    base_nodes = ["1111", "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999", "0000", "A124", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF"]
 
     Enum.each(base_nodes, fn(i)->
       node_name = i |> String.to_atom()
-      # {:ok, node_pid} = Peer.start_link(20, data, node_name,[])
-      map = %{}
-      Enum.each(base_nodes, fn x-> Map.put(map,String.at(x,0),x)end)
-      routing_table = %{
-        "0": map
-      }
-      Enum.each(base_nodes, fn n ->
-        IO.inspect map[n]
-      end)
-      {:ok, _node_pid} = Node.start_link("first", node_name, routing_table,[])
+      #IO.inspect(node_name)
+
+      {:ok, _node_pid} = Node.start_link("first", node_name, base_nodes,[])
+
+      #Node.gettable(node_pid);
     end)
-    #node_list = Chief.get(MyMaster)
+
+    node_list = Master.get(MyMaster)
+
+    Enum.each(0..15, fn(i) ->
+    any_node = Enum.fetch!(node_list,i)
+
+    node_pid = Master.lookup(MyMaster,any_node)
+
+
+    IO.puts any_node
+    IO.inspect node_pid
+
+    end)
+    #map = Node.gettable(any_node)
+
+    #Enum.each map["0"], fn {k, v} ->
+     # IO.puts "#{k} --> #{v}"
+    #end
+
+    #IO.puts map["0"]["A"]
 
   end
+
 end
