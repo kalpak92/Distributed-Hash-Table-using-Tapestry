@@ -16,8 +16,8 @@ defmodule Node do
   def init(args) do
     [type,self_id,base_nodes] = args
     Master.put(MyMaster,self_id,self())
-    if type == "first" do
-      map0 = Enum.reduce(base_nodes--[Atom.to_string(self_id)], %{}, fn x, acc->
+    if type == "Base" do
+      map0 = Enum.reduce(base_nodes--[self_id], %{}, fn x, acc->
         Map.put(acc,String.at(x,0),x)
       end)
       map1 = Enum.reduce(base_nodes, %{}, fn x, acc-> Map.put(acc,String.at(x,0),"") end)
@@ -33,6 +33,14 @@ defmodule Node do
         %{
           :parent => nil,
           :table => routing_table,
+          :id => self_id
+        }
+      }
+    else
+      {:ok,
+        %{
+          :parent => base_nodes,
+          :table => %{},
           :id => self_id
         }
       }
