@@ -59,6 +59,7 @@ defmodule Starter do
     # Enum.each(keys, fn key ->
     # IO.puts(key)
     # end)
+    #IO.puts(key)
     list = Master.get(MyMaster)
     Enum.reduce(keys, {"", 0}, fn key, {nearest, distance} ->
       {nearestloop, distanceloop} =
@@ -95,17 +96,24 @@ defmodule Starter do
     length = String.length(idhex)
     range = (length - 4)..length
     idhexlen4 = String.slice(idhex, range)
-    idstr = String.pad_leading(idhexlen4, 5 - String.length(idhexlen4), "0")
+    idstr = String.pad_leading(idhexlen4, 4, "0")
     check_id(idstr)
   end
 
   # makes sure all the ids are unique
   def check_id(id) do
     node_list = Master.get(MyMaster)
-
     if id in node_list do
-      id = id + :rand.uniform(100)
-      check_id(id)
+      #IO.puts(id)
+      {idint, _} = Integer.parse(id,16)
+      idhex = Integer.to_string(idint + :rand.uniform(100),16)
+      #IO.puts(idhex)
+      length = String.length(idhex)
+      range = (length - 4)..length
+      idhexlen4 = String.slice(idhex, range)
+      #IO.puts(idhexlen4)
+      idstr = String.pad_leading(idhexlen4, 4, "0")
+      check_id(idstr)
     else
       id
     end
