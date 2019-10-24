@@ -23,22 +23,37 @@ defmodule Starter do
       #node_list = Master.get(MyMaster)
       {parent, _count} = leading_match(node_name)
       IO.puts("#{node_name} parent is #{parent}")
-      {:ok,_node_pid} = Node.start_link("Dynamic", node_name,parent,[])
+      {:ok,node_pid} = Node.start_link("Dynamic", node_name,parent,[])
+      Node.update_parent(node_pid,node_name,parent)
     end)
 
 
-    _node_list = Master.get(MyMaster)
+    node_list = Master.get(MyMaster)
+
+    any_node = Enum.at(node_list,:rand.uniform(length(node_list)))
+    IO.puts ("Node we are inspecting: #{any_node}")
+    node_pid = Master.lookup(MyMaster,any_node)
+    map_of_rand_node = Node.gettable(node_pid)
+
+    Enum.each 0..3, fn(i) ->
+      IO.puts "Level #{i}"
+      Enum.each map_of_rand_node[Integer.to_string(i)], fn {k,v} ->
+        IO.puts "#{k} --> #{v}"
+      end
+    end
 
     #Enum.each(0..15, fn(i) ->
-    #any_node = Enum.fetch!(node_list,i)
-
+    #any_node = Enum.fetch!(base_nodes,i)
+    #IO.puts "Node Name: #{any_node}"
     #node_pid = Master.lookup(MyMaster,any_node)
+    #map_of_rand_node = Node.gettable(node_pid)
 
-
-    #IO.puts Kernel.is_atom(any_node)
-    #IO.puts any_node
-    #IO.inspect node_pid
-
+    #Enum.each 0..3, fn(i) ->
+     # IO.puts "level: #{i}"
+     # Enum.each map_of_rand_node[Integer.to_string(i)], fn {k,v} ->
+      #  IO.puts "#{k} --> #{v}"
+      #end
+    #end
     #end)
 
 
