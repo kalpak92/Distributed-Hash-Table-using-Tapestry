@@ -12,13 +12,25 @@ defmodule Starter do
     {:ok, master_pid} = Master.start_link([])
     Process.register master_pid, MyMaster
     IO.puts("In Starter")
-    base_nodes = ["1111", "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999", "0000", "A124", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF"]
+    base_nodes = ["1111", "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999", "0000", "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF"]
     numNodes = numNodes - 16
     Enum.each(base_nodes, fn(i)->
       {:ok, _node_pid} = Node.start_link("Base", i, base_nodes,[])
     end)
 
-    Enum.each(1..numNodes, fn(i) ->
+    #test_list = ["AABA","AACD","A123","A928","A931","A948","A921","A959","A951","A341","A352"]
+
+    #testing for routing table
+
+    #Enum.each(test_list, fn(i)->
+     # {parent, _count} = leading_match(i)
+     # IO.puts("#{i} parent is #{parent}")
+     # {:ok,node_pid} = Node.start_link("Dynamic",i, parent,[])
+     # Node.update_parent(node_pid,i,parent)
+    #end)
+
+
+   Enum.each(1..numNodes, fn(i) ->
       node_name = Integer.to_string(i) |> hash_modulus()
       #node_list = Master.get(MyMaster)
       {parent, _count} = leading_match(node_name)
@@ -27,6 +39,7 @@ defmodule Starter do
       Node.update_parent(node_pid,node_name,parent)
     end)
 
+    :timer.sleep(1000)
 
     node_list = Master.get(MyMaster)
 
@@ -42,8 +55,8 @@ defmodule Starter do
       end
     end
 
-    #Enum.each(0..15, fn(i) ->
-    #any_node = Enum.fetch!(base_nodes,i)
+    #Enum.each(test_list, fn(i) ->
+    #any_node = i
     #IO.puts "Node Name: #{any_node}"
     #node_pid = Master.lookup(MyMaster,any_node)
     #map_of_rand_node = Node.gettable(node_pid)
@@ -51,8 +64,8 @@ defmodule Starter do
     #Enum.each 0..3, fn(i) ->
      # IO.puts "level: #{i}"
      # Enum.each map_of_rand_node[Integer.to_string(i)], fn {k,v} ->
-      #  IO.puts "#{k} --> #{v}"
-      #end
+     #   IO.puts "#{k} --> #{v}"
+    #  end
     #end
     #end)
 

@@ -33,17 +33,48 @@ defmodule Node do
     state = Map.put(state, :table, map)
     Enum.each sibling_list, fn sibling ->
       sibling_pid = Master.lookup(MyMaster,sibling)
-      GenServer.cast(sibling_pid,{:update_sibling,child_id})
+      GenServer.cast(sibling_pid,{:update_sibling,child_id,index0+1})
+    end
+    if index0<3 do
+      GenServer.cast(self(),{:update_children,child_id,index0+1})
     end
     {:noreply,state}
   end
 
-  def handle_cast({:update_sibling,sibling_id},state) do
+  def handle_cast({:update_children,child_id,start_level},state) do
+    map = state[:table]
+
+    Enum.each start_level..3, fn x ->
+      siblingsatsamelevel = Enum.reduce(map[Integer.to_string(x)], [], fn {_k,v}, list ->
+        list ++ [v]
+      end)
+      siblingsatsamelevel = Enum.filter(siblingsatsamelevel,fn x-> x != "" end)
+      Enum.each siblingsatsamelevel, fn sibling ->
+        sibling_pid = Master.lookup(MyMaster, sibling)
+        GenServer.cast(sibling_pid,{:update_sibling,child_id,x+1})
+      end
+    end
+    {:noreply,state}
+  end
+
+  def handle_cast({:update_sibling,update_id,start_level},state) do
     map = state[:table]
     self_id = state[:id]
-    index0 = charmatch(sibling_id,self_id)
-    index1 = String.at(sibling_id,index0)
-    map = put_in(map,[Integer.to_string(index0),index1],sibling_id)
+    index0 = charmatch(update_id,self_id)
+    index1 = String.at(update_id,index0)
+    if start_level <= 3 do
+      Enum.each start_level..3, fn x ->
+        siblingsatsamelevel = Enum.reduce(map[Integer.to_string(x)], [], fn {_k,v}, list ->
+          list ++ [v]
+        end)
+        siblingsatsamelevel = Enum.filter(siblingsatsamelevel,fn x-> x != "" end)
+        Enum.each siblingsatsamelevel, fn sibling ->
+          sibling_pid = Master.lookup(MyMaster, sibling)
+          GenServer.cast(sibling_pid,{:update_sibling,update_id,x+1})
+        end
+      end
+    end
+    map = put_in(map,[Integer.to_string(index0),index1],update_id)
     state = Map.put(state, :table, map)
     {:noreply,state}
   end
@@ -77,7 +108,17 @@ defmodule Node do
       index1 = charmatch(self_id, parent)
       index2 = String.at(parent,index1)
       #IO.puts(map)
+
+      list = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"]
+      mapnull = Enum.reduce(list, %{}, fn x, acc-> Map.put(acc,x,"") end)
+
+      map = Enum.reduce index1+1..3, map, fn (i), map ->
+        indexstr = Integer.to_string(i)
+        Map.put(map,indexstr,mapnull)
+      end
+
       map = put_in(map,[Integer.to_string(index1),index2],parent)
+
       #IO.puts map[Integer.to_string(index1)][index2]
       {:ok,
         %{
