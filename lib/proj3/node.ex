@@ -9,6 +9,10 @@ defmodule Node do
     GenServer.call(server,{:get_table})
   end
 
+  def lookup(server,destination_node) do
+    GenServer.cast(server,{:find_destination,destination_node,0})
+  end
+
   def update_parent(_server,self_id,parent) do
     parent_pid = Master.lookup(MyMaster,parent)
     GenServer.cast(parent_pid,{:update_child,self_id})
@@ -16,6 +20,25 @@ defmodule Node do
 
   def handle_call({:get_table},_from,state) do
     {:reply, state[:table], state}
+  end
+
+  def handle_cast({:find_destination,destination_id,hop},state) do
+    map = state[:table]
+    self_id = state[:id]
+    index0 = charmatch(self_id,destination_id)
+    index1 = String.at(destination_id,index0)
+    IO.puts "level: #{index0} of node: #{self_id}"
+
+    Enum.each map[Integer.to_string(index0)], fn {k,v} ->
+    IO.puts "#{k} --> #{v}" end
+
+    if map[Integer.to_string(index0)][index1] == destination_id do
+      IO.puts "Destination found at node #{self_id}, total hop: #{hop}"
+    else
+      hop_pid = Master.lookup(MyMaster,map[Integer.to_string(index0)][index1])
+      GenServer.cast(hop_pid,{:find_destination,destination_id,hop+1})
+    end
+    {:noreply,state}
   end
 
   def handle_cast({:update_child,child_id},state) do

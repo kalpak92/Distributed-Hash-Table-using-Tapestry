@@ -34,7 +34,7 @@ defmodule Starter do
       node_name = Integer.to_string(i) |> hash_modulus()
       #node_list = Master.get(MyMaster)
       {parent, _count} = leading_match(node_name)
-      IO.puts("#{node_name} parent is #{parent}")
+      #IO.puts("#{node_name} parent is #{parent}")
       {:ok,node_pid} = Node.start_link("Dynamic", node_name,parent,[])
       Node.update_parent(node_pid,node_name,parent)
     end)
@@ -55,6 +55,15 @@ defmodule Starter do
       end
     end
 
+    source_node = Enum.at(node_list,:rand.uniform(length(node_list)))
+    destination_list = node_list--[source_node]
+
+    destination_node = Enum.at(destination_list,:rand.uniform(length(destination_list)))
+    #source_node = "1111"
+    #destination_node = "365C"
+    IO.puts "#{source_node} trying to reach #{destination_node}"
+    source_pid = Master.lookup(MyMaster,source_node)
+    Node.lookup(source_pid,destination_node)
     #Enum.each(test_list, fn(i) ->
     #any_node = i
     #IO.puts "Node Name: #{any_node}"

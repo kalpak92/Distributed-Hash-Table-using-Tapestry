@@ -1,2 +1,2 @@
 Starter.start(System.argv)
-IO.puts("Starter Started")
+#IO.puts("Starter Started")
