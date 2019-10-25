@@ -10,6 +10,7 @@
 ```shell
 ├── README.md
 ├── _build
+├── image.png
 ├── lib
 │   ├── proj3
 │   │   ├── master.ex

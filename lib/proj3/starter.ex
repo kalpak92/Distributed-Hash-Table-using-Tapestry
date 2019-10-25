@@ -73,15 +73,20 @@ defmodule Starter do
       end
     end)
   end
+
+  @doc """
+  Compute the SHA-1 hash for each node.
+  Return the last 4 digits by truncating the required digits.
+  """
   def hash_modulus(str_num) do
-    num = :crypto.hash(:sha, str_num) |> Base.encode16()
-    {int_num, _} = Integer.parse(num, 16)
+    num = :crypto.hash(:sha, str_num) |> Base.encode16()    # generate the hexadecimal sha-1 hash.
+    {int_num, _} = Integer.parse(num, 16)                   # convert to integer for calculation purpose.
     id = rem(int_num, :math.pow(2, 20) |> trunc)
     idhex = Integer.to_string(id, 16)
     length = String.length(idhex)
     range = (length - 4)..length
     idhexlen4 = String.slice(idhex, range)
-    idstr = String.pad_leading(idhexlen4, 4, "0")
+    idstr = String.pad_leading(idhexlen4, 4, "0")           # pad with zeros if less than 4 digits are generated.
     check_id(idstr)
   end
 
