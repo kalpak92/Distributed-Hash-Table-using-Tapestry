@@ -27,13 +27,15 @@ defmodule Node do
     self_id = state[:id]
     index0 = charmatch(self_id,destination_id)
     index1 = String.at(destination_id,index0)
-    IO.puts "level: #{index0} of node: #{self_id}"
+    #IO.puts "level: #{index0} of node: #{self_id}"
 
-    Enum.each map[Integer.to_string(index0)], fn {k,v} ->
-    IO.puts "#{k} --> #{v}" end
+    #Enum.each map[Integer.to_string(index0)], fn {k,v} ->
+    #IO.puts "#{k} --> #{v}" end
 
     if map[Integer.to_string(index0)][index1] == destination_id do
-      IO.puts "Destination found at node #{self_id}, total hop: #{hop}"
+      #:ets.insert(data, {:max, hop})
+      #IO.puts "Destination found at node #{self_id}, total hop: #{hop}"
+      Stage.savemax(MyStage,hop)
     else
       hop_pid = Master.lookup(MyMaster,map[Integer.to_string(index0)][index1])
       GenServer.cast(hop_pid,{:find_destination,destination_id,hop+1})

@@ -3,7 +3,7 @@ defmodule Starter do
     [numNodes, numReq] = args
 
     {numNodes, _} = Integer.parse(numNodes)
-    #{numReq, _} = Integer.parse(numReq)
+    {numReq, _} = Integer.parse(numReq)
 
     # ets table
     # data = :ets.new(:data, [:set, :named_table, :public])
@@ -11,6 +11,10 @@ defmodule Starter do
     # starting the Master GenServer
     {:ok, master_pid} = Master.start_link([])
     Process.register master_pid, MyMaster
+
+    {:ok, stage_pid} = Stage.start_link([])
+    Process.register stage_pid, MyStage
+
     IO.puts("In Starter")
     base_nodes = ["1111", "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999", "0000", "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF"]
     numNodes = numNodes - 16
@@ -43,17 +47,17 @@ defmodule Starter do
 
     node_list = Master.get(MyMaster)
 
-    any_node = Enum.at(node_list,:rand.uniform(length(node_list)))
-    IO.puts ("Node we are inspecting: #{any_node}")
-    node_pid = Master.lookup(MyMaster,any_node)
-    map_of_rand_node = Node.gettable(node_pid)
+    #any_node = Enum.at(node_list,:rand.uniform(length(node_list)))
+    #IO.puts ("Node we are inspecting: #{any_node}")
+    #node_pid = Master.lookup(MyMaster,any_node)
+    #map_of_rand_node = Node.gettable(node_pid)
 
-    Enum.each 0..3, fn(i) ->
-      IO.puts "Level #{i}"
-      Enum.each map_of_rand_node[Integer.to_string(i)], fn {k,v} ->
-        IO.puts "#{k} --> #{v}"
-      end
-    end
+    #Enum.each 0..3, fn(i) ->
+    #  IO.puts "Level #{i}"
+    #  Enum.each map_of_rand_node[Integer.to_string(i)], fn {k,v} ->
+    #    IO.puts "#{k} --> #{v}"
+    #  end
+    #end
 
     source_node = Enum.at(node_list,:rand.uniform(length(node_list)))
     destination_list = node_list--[source_node]
@@ -64,6 +68,18 @@ defmodule Starter do
     IO.puts "#{source_node} trying to reach #{destination_node}"
     source_pid = Master.lookup(MyMaster,source_node)
     Node.lookup(source_pid,destination_node)
+    :timer.sleep(1000)
+
+    maximum_hop = Stage.getmax(MyStage);
+    IO.puts("The above request completed in hops: #{maximum_hop}")
+
+    IO.puts("Sending all requests to calculate maximum hops in network for any routing...")
+
+    Stage.send_request(MyStage,numReq);
+
+    :sys.get_state(MyStage, :infinity)
+    maximum_hop = Stage.getmax(MyStage);
+    IO.puts("Maximum Hops done: #{maximum_hop}")
     #Enum.each(test_list, fn(i) ->
     #any_node = i
     #IO.puts "Node Name: #{any_node}"

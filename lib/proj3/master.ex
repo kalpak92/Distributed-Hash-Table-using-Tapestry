@@ -13,9 +13,11 @@ defmodule Master do
     GenServer.call(server, {:get})
   end
 
+
   def lookup(server, kash) do
     GenServer.call(server, {:lookup, kash})
   end
+
   def init(:ok) do
     {:ok, %{:node_list => [], :lookuptable => %{}}}
   end
