@@ -147,6 +147,9 @@ defmodule Node do
     end
   end
 
+  @doc """
+  Get the number of characters that matches.
+  """
   def charmatch(child, parent) do
     char1 = String.at(parent, 0)
     char2 = String.at(parent, 1)

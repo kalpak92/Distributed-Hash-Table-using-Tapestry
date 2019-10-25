@@ -12,12 +12,15 @@ defmodule Starter do
     Process.register stage_pid, MyStage
 
     IO.puts("In Starter")
+    # Create the root node set first. Here we create 16 root nodes.
     base_nodes = ["1111", "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999", "0000", "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF"]
     numNodes = numNodes - 16
+    # Start the genserver for those root nodes.
     Enum.each(base_nodes, fn(i)->
       {:ok, _node_pid} = Node.start_link("Base", i, base_nodes,[])
     end)
 
+    ## Spawning rest of the nodes.
    Enum.each(1..numNodes, fn(i) ->
       node_name = Integer.to_string(i) |> hash_modulus()
       {parent, _count} = leading_match(node_name)
@@ -40,6 +43,10 @@ defmodule Starter do
 
   end
 
+  @doc """
+  Find the closest prefix match for the new node to be inserted into the network.
+  Return the Parent.
+  """
   def leading_match(key) do
     keys = [String.slice(key, 0..-2), String.slice(key, 0..-3), String.slice(key, 0..-4)]
 
@@ -48,7 +55,6 @@ defmodule Starter do
       {nearestloop, distanceloop} =
         Enum.reduce(list, {"", 0}, fn item, {nearest, distance} ->
           match_length = String.length(item) - String.length(String.trim_leading(item, key))
-
           if match_length > distance do
             {item, match_length}
           else
