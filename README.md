@@ -49,9 +49,9 @@ Maximum Hops done: 3
 2. cd proj3
 3. mix run proj3.exs <numNodes> <numRequests>
 
-| Argument    | Possible Values      |
-| ----------- | -------------------- |
-| numNodes    | Any positive integer |
+|  Argument   |   Possible Values    |
+| :---------: | :------------------: |
+|  numNodes   | Any positive integer |
 | numRequests | Any positive integer |
 
 ## Implementation and Inference
@@ -80,13 +80,13 @@ Thus, for every new node added to the network, the root node for the same update
 ## Test Results
 
 | Num_request | num_nodes | max_hop |
-| ----------- | --------- | ------- |
-| 5           | 20        | 1       |
-| 7           | 50        | 2       |
-| 12          | 500       | 2       |
-| 14          | 1000      | 3       |
-| 40          | 2000      | 3       |
-| 50          | 5000      | 3       |
+| :---------: | :-------: | :-----: |
+|      5      |    20     |    1    |
+|      7      |    50     |    2    |
+|     12      |    500    |    2    |
+|     14      |   1000    |    3    |
+|     40      |   2000    |    3    |
+|     50      |   5000    |    3    |
 
 We can thereby infer that with the increase of the number of nodes, they are evenly distributed in the tapestry address space and they are available to be reached by a maximum of 3 hop count which is expected, as each node is identified by 4 hexadecimal digits.
 
