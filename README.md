@@ -68,7 +68,7 @@ Thus, for every new node added to the network, the root node for the same update
 
 #### Lookup / Routing
 
-![](/Users/kalpak/Desktop/Screen Shot 2019-10-25 at 1.58.19 PM.png)
+![](https://github.com/kalpak92/Distributed-Hash-Table-using-Tapestry/blob/master/image.png)
 
 **Route message from 5230 to 42AD** 
 
