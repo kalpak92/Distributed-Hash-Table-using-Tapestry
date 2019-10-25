@@ -30,7 +30,6 @@ defmodule Stage do
         Node.lookup(source_pid,rand_dest_node)
       end
     end
-    #Process.exit(MyMaster,:kill)
     {:noreply,state}
   end
 

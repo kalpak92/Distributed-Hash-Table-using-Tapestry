@@ -27,14 +27,8 @@ defmodule Node do
     self_id = state[:id]
     index0 = charmatch(self_id,destination_id)
     index1 = String.at(destination_id,index0)
-    #IO.puts "level: #{index0} of node: #{self_id}"
-
-    #Enum.each map[Integer.to_string(index0)], fn {k,v} ->
-    #IO.puts "#{k} --> #{v}" end
 
     if map[Integer.to_string(index0)][index1] == destination_id do
-      #:ets.insert(data, {:max, hop})
-      #IO.puts "Destination found at node #{self_id}, total hop: #{hop}"
       Stage.savemax(MyStage,hop)
     else
       hop_pid = Master.lookup(MyMaster,map[Integer.to_string(index0)][index1])
@@ -132,7 +126,6 @@ defmodule Node do
       map = Node.gettable(Master.lookup(MyMaster,parent))
       index1 = charmatch(self_id, parent)
       index2 = String.at(parent,index1)
-      #IO.puts(map)
 
       list = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"]
       mapnull = Enum.reduce(list, %{}, fn x, acc-> Map.put(acc,x,"") end)
@@ -144,7 +137,6 @@ defmodule Node do
 
       map = put_in(map,[Integer.to_string(index1),index2],parent)
 
-      #IO.puts map[Integer.to_string(index1)][index2]
       {:ok,
         %{
           :parent => parent,
